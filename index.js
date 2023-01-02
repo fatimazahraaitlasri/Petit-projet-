@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const cors = require("cors");
-const port = 5000;
+const port = 3000;
 const fs = require("fs");
 const imageModel = require("./models");
 app.use(cors());
@@ -12,14 +12,19 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-mongoose
-  .connect(
-    "mongodb+srv://sahul:FEmG5ZQcSav3DndD@cluster0.alht5.mongodb.net/imageData?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
-  .then(() => console.log("connected successfully"))
-  .catch((err) => console.log("it has an error", err));
+const connectDB = async () => {
+   
+  try {
+    const conn = await mongoose.connect('mongodb://127.0.0.1:27017/UploadImages')
 
+
+    console.log(`MongoDB Connected: ${conn.connection.host}`)
+  } catch (error) {
+    console.log(error)
+    process.exit(1)
+  }
+}
+connectDB();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -56,7 +61,7 @@ app.get('/',async (req,res)=>{
   const allData = await imageModel.find()
   res.json(allData)
 })
-
+  
 app.listen(port, () => {
   console.log("server running successfully");
 });
